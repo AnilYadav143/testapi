@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
@@ -22,7 +23,7 @@ Route::get('/',[AuthController::class,'registerForm']);
 Route::get('login',[AuthController::class,'Login'])->name('login');
 Route::post('postlogin', [AuthController::class,'postlogin']);
 
-// Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('dashboard',[AuthController::class,'Dashboard'])->name('dashboard');
 
     Route::get('add_product',[AuthController::class,'AddProduct'])->name('add_product');
@@ -48,4 +49,8 @@ Route::post('postlogin', [AuthController::class,'postlogin']);
     Route::post('assign_role_permission',[RolePermissionController::class,'store'])->name('assign_role_permission.store');
 
     Route::get('assignrole', [AuthController::class,'AssignRole'])->name('assignrole');
-// });
+});
+
+
+/******************** Frontend routes **********************/
+Route::get('home',[FrontendController::class,'Index'])->name('indax');
