@@ -54,5 +54,5 @@ Route::middleware(['auth'])->group(function () {
 
 
 /******************** Frontend routes **********************/
-Route::get('home',[FrontendController::class,'Index'])->name('indax');
+Route::get('home',[FrontendController::class,'Index'])->name('index');
 Route::get('addtocart/{id}',[FrontendController::class,'AddToCart'])->name('addtocart');
