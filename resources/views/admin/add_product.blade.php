@@ -7,11 +7,11 @@
             <div class="col-sm-12">
                 <div class="bg-secondary rounded h-100 p-4">
                     <h6 class="mb-4">{{ isset($single_data) ? 'Update Product' : 'Add Product' }}</h6>
-                    <form action="{{ isset($single_data) ? route('update_category', $single_data->id) : route('save_product') }}"
+                    <form action="{{ isset($single_data) ? route('update_product', $single_data->id) : route('save_product') }}"
                         method="POST" enctype="multipart/form-data">
                         @csrf
                         @isset($single_data)
-                            @method('put')
+                            @method('PUT')
                         @endisset
                         <div class="row">
                             <div class="mb-3 col-sm-6">
@@ -57,12 +57,86 @@
                                 </select>
                             </div>
                         </div>
+                        @if(isset($single_data))
+                        @php 
+                         $p_var     = json_decode($single_data->p_variation);
+                         $p_var_val = json_decode($single_data->p_var_value);
+                         $p_image = json_decode($single_data->p_image);
+                         $p_price = json_decode($single_data->p_price);
+                         $p_qty = json_decode($single_data->p_qty);
+                         $p_discout_type = json_decode($single_data->p_discout_type);
+                         $p_discout = json_decode($single_data->p_discout);
+                        @endphp
+                        @for($i=0;count($p_var)>$i;$i++)
+                        {{-- @for($single_data->p_variation) --}}
                         <div class="row addrow">
                             <div class="mb-3 col-sm-2 var_type">
                                 <label for="p_variation" class="form-label">Variation Type</label>
                                 <select class="form-select p_variation" name="p_variation[]" id="p_variation"
                                     aria-label="Floating label select example">
-                                    <option selected value="size">Size</option>
+                                    <option selected value="size" {{$p_var[$i]=='size'?'selected':''}}>Size</option>
+                                    <option value="color" {{$p_var[$i]=='color'?'selected':''}}>Color</option>
+                                </select>
+                            </div>
+
+                            @if($p_var[$i]=='size')
+                            <div class="mb-3 col-sm-1 p_size">
+                                <label for="p_var_value" class="form-label">Size</label>
+                                <input type="number" class="form-control" value="{{$p_var_val[$i]}}" name="p_var_value[]" id="p_var_value">    
+                            </div>
+                            @elseif($p_var[$i]=='color')
+                            <div class="mb-3 col-sm-1 p_color"> 
+                                <label for="p_var_value" class="form-label">Color</label> 
+                                <input type="color" class="form-control" value="{{$p_var_val[$i]}}" name="p_var_value[]" id="p_var_value">      
+                            </div>
+                            @endif
+                            <div class="mb-3 col-sm-2">
+                                <label for="p_image" class="form-label">Product Image</label>
+                                <input type="file" class="form-control p_image" name="p_image[]" id="p_image">
+                                <img class="image-preview" src="#" alt="Image Preview"
+                                    style="max-width: 50px; max-height: 50px; display: none;">
+                                @isset($p_image[$i])
+                                    <img src="{{ asset($p_image[$i]) }}" alt="" height="40px" width="40px">
+                                    {{-- <input type="hidden" name="old_image" value="{{$single_data->image}}"> --}}
+                                @endisset
+                            </div>
+                            <div class="mb-3 col-sm-2">
+                                <label for="p_price" class="form-label">Price</label>
+                                <input type="number" class="form-control" name="p_price[]"
+                                    value="{{ isset($p_price[$i]) ? $p_price[$i] : '' }}" id="p_price">
+                            </div>
+                            <div class="mb-3 col-sm-1">
+                                <label for="p_qty" class="form-label">Qty</label>
+                                <input type="number" class="form-control" name="p_qty[]"
+                                    value="{{ isset($p_qty[$i]) ? $p_qty[$i] : '' }}" id="p_qty">
+                            </div>
+                            <div class="mb-3 col-sm-2">
+                                <label for="p_discout_type" class="form-label">Discount Type</label>
+                                <select class="form-select" name="p_discout_type[]" id="p_discout_type"
+                                    aria-label="Floating label select example">
+                                    <option selected disabled value="">...Select Discount Type...</option>
+                                    <option value="percentage" {{ isset($p_discout_type[$i]) ? ($p_discout_type[$i]=='percentage'?'selected':'') : '' }}>Percentage</option>
+                                    <option value="flat" {{ isset($p_discout_type[$i]) ? ($p_discout_type[$i]=='flat'?'selected':'') : '' }}>Flat</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 col-sm-1">
+                                <label for="p_discout" class="form-label">Discount</label>
+                                <input type="number" class="form-control" name="p_discout[]"
+                                    value="{{ isset($p_discout[$i]) ? $p_discout[$i] : '' }}"
+                                    id="p_discout">
+                            </div>
+                            <div class="mb-3 mt-4 pt-2 col-sm-1" id="showhide">
+                                <button type="button" class="btn btn-success addbtn">+</button>
+                            </div>
+                        </div>
+                        @endfor
+                        @elseif(!isset($single_data))
+                        <div class="row addrow">
+                            <div class="mb-3 col-sm-2 var_type">
+                                <label for="p_variation" class="form-label">Variation Type</label>
+                                <select class="form-select p_variation" name="p_variation[]" id="p_variation"
+                                    aria-label="Floating label select example">
+                                    <option selected value="size" >Size</option>
                                     <option value="color">Color</option>
                                 </select>
                             </div>
@@ -111,6 +185,7 @@
                                 <button type="button" class="btn btn-success addbtn">+</button>
                             </div>
                         </div>
+                        @endif
 
                         <button type="submit"
                             class="btn btn-primary">{{ isset($single_data) ? 'Update Product' : 'Add Product' }}</button>

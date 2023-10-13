@@ -283,12 +283,18 @@
         <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Featured
                 Products</span></h2>
         <div class="row px-xl-5">
+            @isset($product)   
+            @foreach($product as $pro_list)
             <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                 <div class="product-item bg-light mb-4">
                     <div class="product-img position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="{{ asset('frontend/img/product-1.jpg') }}" alt="">
+                        @php
+                            $pro_img = isset($pro_list->p_image)?json_decode($pro_list->p_image):'';
+                            $pro_id = isset($pro_list->id)?$pro_list->id:'';
+                        @endphp
+                        <img class="img-fluid w-100" src="{{ isset($pro_img)?asset($pro_img[0]):'' }}" alt="">
                         <div class="product-action">
-                            <a class="btn btn-outline-dark btn-square" href=""><i
+                            <a class="btn btn-outline-dark btn-square" href="{{route('addtocart',$pro_id)}}"><i
                                     class="fa fa-shopping-cart"></i></a>
                             <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
                             <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
@@ -296,11 +302,23 @@
                         </div>
                     </div>
                     <div class="text-center py-4">
-                        <a class="h6 text-decoration-none text-truncate" href="">Product Name Goes Here</a>
+                        <a class="h6 text-decoration-none text-truncate" href="">{{isset($pro_list->p_name)?$pro_list->p_name:''}}</a>
                         <div class="d-flex align-items-center justify-content-center mt-2">
-                            <h5>$123.00</h5>
-                            <h6 class="text-muted ml-2"><del>$123.00</del></h6>
+                            
+                            @php
+                                $p_disc_val = json_decode($pro_list->p_discout_type);
+                                // var_dump($p_disc_val);die;
+                                if($p_disc_val[0] =="flat"){
+                                    $disc_price = json_decode($pro_list->p_price)[0]-json_decode($pro_list->p_discout)[0];
+                                }elseif($p_disc_val[0]=="percentage") {
+                                    // $disc_price = json_decode($pro_list->p_price)[0]-((json_decode($pro_list->p_discout)[0]*100)/json_decode($pro_list->p_price)[0]);
+                                    $disc_price = json_decode($pro_list->p_price)[0] - (json_decode($pro_list->p_price)[0] * json_decode($pro_list->p_discout)[0] / 100);
+                                }   
+                            @endphp
+                            <h5>{{$disc_price}}</h5>
+                            <h6 class="text-muted ml-2"><del>{{isset($pro_list->p_price)?json_decode($pro_list->p_price)[0]:''}}</del></h6>
                         </div>
+                        
                         <div class="d-flex align-items-center justify-content-center mb-1">
                             <small class="fa fa-star text-primary mr-1"></small>
                             <small class="fa fa-star text-primary mr-1"></small>
@@ -309,9 +327,12 @@
                             <small class="fa fa-star text-primary mr-1"></small>
                             <small>(99)</small>
                         </div>
+                        <a href="{{route('addtocart',$pro_id)}}" class="btn btn-warning">Add To Cart</a>
                     </div>
                 </div>
-            </div>
+            </div>   
+            @endforeach  
+            @endisset
             <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                 <div class="product-item bg-light mb-4">
                     <div class="product-img position-relative overflow-hidden">

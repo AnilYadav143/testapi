@@ -31,6 +31,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('manage_product',[AuthController::class,'ManageProduct'])->name('manage_product');
     Route::post('pro_delete/{id}',[AuthController::class,'ProDelete'])->name('pro_delete');
     Route::get('pro_edit/{id}',[AuthController::class,'ProEdit'])->name('pro_edit');
+    Route::put('update_product/{id}',[AuthController::class,'ProUpdate'])->name('update_product');
 
     Route::get('add_category',[AuthController::class,'AddCategory'])->name('add_category');
     Route::post('add_category',[AuthController::class,'AddCategory'])->name('save_category');
@@ -54,3 +55,4 @@ Route::middleware(['auth'])->group(function () {
 
 /******************** Frontend routes **********************/
 Route::get('home',[FrontendController::class,'Index'])->name('indax');
+Route::get('addtocart/{id}',[FrontendController::class,'AddToCart'])->name('addtocart');

@@ -173,6 +173,52 @@ class AuthController extends Controller
         $categories = Category::where('parent_id', null)->orderby('name', 'asc')->get();
         return view('admin.add_product',compact('single_data','categories','product_type'));
     }
+    public function ProUpdate(Request $request, $id){
+        // dd($request->all());
+            $validator = $request->validate([
+                'p_name'      => 'required',
+                'p_categry_id' => 'required',
+                'p_description' => 'required',
+                'p_type_id' => 'required',
+                'p_variation' => 'required',
+                'p_var_value' => 'required',
+                'p_price' => 'required',
+                'p_qty' => 'required',
+                'p_discout_type' => 'required',
+                'p_discout' => 'required',
+                
+            ]);
+            if($request->has('p_image')){
+                $path_img = array();
+                // dd($request->all());
+                for($i=0;count($request->p_image)>$i;$i++){
+                    $name =  'p_image'.rand(0,1000).time().'.'.$request->p_image[$i]->extension();
+                    $path =   public_path().'/admin/product_image';
+                    $request->p_image[$i]->move($path,$name);
+                    $path_img[] = 'admin/product_image/'.$name;
+                }
+                Product::find($id)->update(['p_image'=>json_encode($path_img)]);
+            }
+            $res = Product::find($id)->update([
+                'p_name'      => $request->p_name,
+                'p_categry_id' => $request->p_categry_id,
+                'p_description' => $request->p_description,
+                'p_type_id' => $request->p_type_id,
+                'p_variation' => json_encode($request->p_variation),
+                'p_var_value' => json_encode($request->p_var_value),
+                'p_price' => json_encode($request->p_price),
+                'p_qty' => json_encode($request->p_qty),
+                'p_discout_type' => json_encode($request->p_discout_type),
+                'p_discout' => json_encode($request->p_discout),
+            ]);
+            if($res){
+                Alert::success('Success Title', 'Success Product Updated');
+                return redirect()->back();
+            }else{
+                Alert::error('Error Title', 'Error Product not Updated');
+                return redirect()->back();
+            }
+    }
     
     /**
      * store Category and View
